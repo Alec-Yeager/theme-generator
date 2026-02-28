@@ -15,9 +15,12 @@ FetchContent_MakeAvailable(spdlog)
 
 find_package(OpenCV REQUIRED)
 
+# For now laziliy just find all source files. It might be more than one exec later but eh
+file(GLOB SRC_LIST "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
+
 # Add source files
 add_executable(theme-generator
-    src/Main.cpp
+    ${SRC_LIST}
 )
 
 target_compile_definitions(theme-generator PRIVATE

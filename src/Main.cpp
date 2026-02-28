@@ -1,12 +1,16 @@
-#include <iostream>
+#include "ClusteringAlgorithm.hpp"
+#include "ColorTransformation.hpp"
+#include "DebugClustering.hpp"
+#include "ImageHandler.hpp"
+
 #include <filesystem>
+#include <iostream>
 #include <opencv2/opencv.hpp>
 #include <spdlog/spdlog.h>
 
 namespace fs = std::filesystem;
 
-int main(int argc, char const *argv[])
-{
+int main(int argc, char const *argv[]) {
 
 #ifdef NDEBUG
     spdlog::set_level(spdlog::level::info);
@@ -14,39 +18,33 @@ int main(int argc, char const *argv[])
     spdlog::set_level(spdlog::level::debug);
 #endif
 
-    SPDLOG_DEBUG("hmmmmm");
-    std::vector<fs::path> filepaths{};
-    filepaths.reserve(4);
-    for (const auto &entry : fs::directory_iterator("../test/images"))
-    {
-        if (fs::is_regular_file(entry))
-        {
+    SPDLOG_DEBUG("Currently in: {}", fs::current_path().string());
+    std::vector<ImageHandler> imageHandlers{};
+    auto clustering_alg = std::make_shared<DebugClustering>();
+
+    for (const auto &entry : fs::directory_iterator("../test/images")) {
+        if (fs::is_regular_file(entry)) {
             SPDLOG_DEBUG("Found file: {}.", entry.path().string());
-            filepaths.push_back(entry.path());
+            imageHandlers.emplace_back(entry.path(), clustering_alg);
         }
     }
 
-    std::vector<cv::Mat> images{};
-    images.reserve(filepaths.size());
-    for (const auto &filepath : filepaths)
-    {
-        SPDLOG_DEBUG("Loading file: {}.", filepath.string());
-        images.emplace_back(cv::imread(filepath));
-    }
-
-    // This is a bit stupid.
-    for (int i = 0; i < images.size(); i++)
-    {
-        std::string name = filepaths[i].filename().string();
+    // This is a bit stupid, prolly a better way to handle the empty handlers
+    for (auto &ih : imageHandlers) {
+        std::string name = ih.path().filename().string();
         SPDLOG_DEBUG("Displaying image: {}.", name);
-        if (images[i].empty())
-        {
+        if (ih.image().empty()) {
             SPDLOG_ERROR("Failed to load {}", name);
             continue;
         }
 
+        // auto &val = ih.image().at<cv::Vec3b>(0, 0);
+        //  SPDLOG_DEBUG("RGB: ({},{},{})", val[0], val[1], val[2]);
+        auto vals = ih.calculateClusterMeans(6);
+        ih.displayMeansInImage();
+
         cv::namedWindow(name);
-        cv::imshow(name, images[i]);
+        cv::imshow(name, ih.image());
     }
 
     while (!((cv::waitKey(1) & 0xEFFFFF) == 27))
