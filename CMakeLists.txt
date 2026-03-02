@@ -17,10 +17,16 @@ find_package(OpenCV REQUIRED)
 
 # For now laziliy just find all source files. It might be more than one exec later but eh
 file(GLOB SRC_LIST "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
+file(GLOB CLUSTERING_LIST "${CMAKE_CURRENT_SOURCE_DIR}/src/clustering/*.cpp")
+file(GLOB COLORING_LIST "${CMAKE_CURRENT_SOURCE_DIR}/src/coloring/*.cpp")
+
 
 # Add source files
 add_executable(theme-generator
     ${SRC_LIST}
+    ${CLUSTERING_LIST}
+    ${COLORING_LIST}
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/coloring/hsluv.c
 )
 
 target_compile_definitions(theme-generator PRIVATE

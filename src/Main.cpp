@@ -1,7 +1,9 @@
-#include "ClusteringAlgorithm.hpp"
-#include "ColorTransformation.hpp"
-#include "DebugClustering.hpp"
 #include "ImageHandler.hpp"
+#include "clustering/ClusteringAlgorithm.hpp"
+#include "clustering/ClusteringFactory.hpp"
+#include "clustering/DebugClustering.hpp"
+#include "coloring/BGRtoHSLuvTransformation.hpp"
+#include "coloring/ColorTransformation.hpp"
 
 #include <filesystem>
 #include <iostream>
@@ -20,12 +22,14 @@ int main(int argc, char const *argv[]) {
 
     SPDLOG_DEBUG("Currently in: {}", fs::current_path().string());
     std::vector<ImageHandler> imageHandlers{};
-    auto clustering_alg = std::make_shared<DebugClustering>();
+    auto debug_clustering_alg = std::make_shared<DebugClustering>();
+    auto hamerly_k_means = std::make_shared<KMeansClusteringHamerly>();
+    auto naive_k_means = std::make_shared<KMeansClusteringNaive>();
 
     for (const auto &entry : fs::directory_iterator("../test/images")) {
         if (fs::is_regular_file(entry)) {
             SPDLOG_DEBUG("Found file: {}.", entry.path().string());
-            imageHandlers.emplace_back(entry.path(), clustering_alg);
+            imageHandlers.emplace_back(entry.path(), debug_clustering_alg);
         }
     }
 
@@ -40,11 +44,14 @@ int main(int argc, char const *argv[]) {
 
         // auto &val = ih.image().at<cv::Vec3b>(0, 0);
         //  SPDLOG_DEBUG("RGB: ({},{},{})", val[0], val[1], val[2]);
-        auto vals = ih.calculateClusterMeans(6);
+        ih.setTransforms(
+            std::vector<std::shared_ptr<ColorTransformation>>{std::make_shared<BGRtoHSLuvTransformation>()});
+        ih.setClusterAlg(hamerly_k_means);
+        ih.calculateClusterMeans(8);
         ih.displayMeansInImage();
 
         cv::namedWindow(name);
-        cv::imshow(name, ih.image());
+        cv::imshow(name, ih.paletteImage());
     }
 
     while (!((cv::waitKey(1) & 0xEFFFFF) == 27))

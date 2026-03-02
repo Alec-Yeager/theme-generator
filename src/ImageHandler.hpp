@@ -1,6 +1,6 @@
 #pragma once
-#include "ClusteringAlgorithm.hpp"
-#include "ColorTransformation.hpp"
+#include "clustering/ClusteringAlgorithm.hpp"
+#include "coloring/ColorTransformation.hpp"
 
 #include <filesystem>
 #include <opencv2/opencv.hpp>
@@ -14,6 +14,9 @@ public:
 
     std::filesystem::path path() { return filepath_; };
     const cv::Mat &image() { return image_; };
+    const cv::Mat &paletteImage() { return palette_image_; };
+    void setTransforms(std::vector<std::shared_ptr<ColorTransformation>> transforms) { transforms_ = transforms; };
+    void setClusterAlg(std::shared_ptr<ClusteringAlgorithm> cluster_alg) { cluster_alg_ = cluster_alg; };
 
     std::vector<cv::Vec3b> calculateClusterMeans(size_t k);
     void displayMeansInImage(std::vector<cv::Vec3b> means);
@@ -24,6 +27,7 @@ private:
     std::vector<std::shared_ptr<ColorTransformation>> transforms_;
     std::filesystem::path filepath_;
     cv::Mat image_;
+    cv::Mat palette_image_;
     // Maybe don't actually need to store this but eh
     cv::Mat transformed_image_;
     std::vector<cv::Vec3b> means_{};
