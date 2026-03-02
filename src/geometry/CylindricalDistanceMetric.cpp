@@ -1,7 +1,7 @@
-#include "FirstPolarDistanceMetric.hpp"
+#include "CylindricalDistanceMetric.hpp"
 
-float FirstPolarDistanceMetric::calculate(const float &ax, const float &ay, const float &az, const float &bx,
-                                          const float &by, const float &bz) const {
+float CylindricalDistanceMetric::calculate(const float &ax, const float &ay, const float &az, const float &bx,
+                                           const float &by, const float &bz) const {
     // Assumes the polar coord comes in as 180 max (opencv convention)
     float dx = std::abs(ax - bx);
     dx = std::min(dx, 180 - dx) / 180.0;

@@ -19,6 +19,7 @@ find_package(OpenCV REQUIRED)
 file(GLOB SRC_LIST "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
 file(GLOB CLUSTERING_LIST "${CMAKE_CURRENT_SOURCE_DIR}/src/clustering/*.cpp")
 file(GLOB COLORING_LIST "${CMAKE_CURRENT_SOURCE_DIR}/src/coloring/*.cpp")
+file(GLOB GEOMETRY_LIST "${CMAKE_CURRENT_SOURCE_DIR}/src/geometry/*.cpp")
 
 
 # Add source files
@@ -26,6 +27,7 @@ add_executable(theme-generator
     ${SRC_LIST}
     ${CLUSTERING_LIST}
     ${COLORING_LIST}
+    ${GEOMETRY_LIST}
     ${CMAKE_CURRENT_SOURCE_DIR}/src/coloring/hsluv.c
 )
 

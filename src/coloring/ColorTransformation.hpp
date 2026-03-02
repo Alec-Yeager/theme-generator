@@ -1,5 +1,5 @@
 #pragma once
-#include "DistanceMetric.hpp"
+#include "../geometry/ColorGeometry.hpp"
 #include <opencv2/opencv.hpp>
 
 // Strategy class for color transformations.
@@ -9,5 +9,5 @@ public:
     virtual cv::Mat transformImage(const cv::Mat &image) = 0;
     virtual cv::Vec3b transformPoint(const cv::Vec3b &color) = 0;
     virtual cv::Vec3b transformPointBack(const cv::Vec3b &color) = 0;
-    virtual std::unique_ptr<DistanceMetric> getDistanceMetric() = 0;
+    virtual std::unique_ptr<ColorGeometry> getColorGeometry() = 0;
 };

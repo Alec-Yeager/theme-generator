@@ -1,5 +1,5 @@
 #include "KMeansClustering.hpp"
-#include "../coloring/DistanceMetric.hpp"
+#include "../geometry/DistanceMetric.hpp"
 #include <chrono>
 #include <random>
 #include <spdlog/spdlog.h>

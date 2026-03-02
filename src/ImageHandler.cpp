@@ -1,6 +1,6 @@
 #include "ImageHandler.hpp"
-#include "coloring/DistanceMetric.hpp"
-#include "coloring/EuclideanDistanceMetric.hpp"
+#include "geometry/DistanceMetric.hpp"
+#include "geometry/EuclideanDistanceMetric.hpp"
 #include <spdlog/spdlog.h>
 
 ImageHandler::ImageHandler(const std::filesystem::path &path, std::shared_ptr<ClusteringAlgorithm> algorithm,

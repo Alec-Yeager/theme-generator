@@ -1,5 +1,5 @@
 #pragma once
-#include "../coloring/DistanceMetric.hpp"
+#include "../geometry//DistanceMetric.hpp"
 #include <opencv2/opencv.hpp>
 #include <vector>
 

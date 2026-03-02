@@ -1,5 +1,5 @@
 #include "BGRtoHSLuvTransformation.hpp"
-#include "FirstPolarDistanceMetric.hpp"
+#include "../geometry/CylindricalColorGeometry.hpp"
 #include "hsluv.h"
 #include <spdlog/spdlog.h>
 
@@ -41,6 +41,6 @@ cv::Vec3b BGRtoHSLuvTransformation::transformPointBack(const cv::Vec3b &color) {
     return cv::Vec3b{static_cast<u_char>(b), static_cast<u_char>(g), static_cast<u_char>(r)};
 }
 
-std::unique_ptr<DistanceMetric> BGRtoHSLuvTransformation::getDistanceMetric() {
-    return std::make_unique<FirstPolarDistanceMetric>();
+std::unique_ptr<ColorGeometry> BGRtoHSLuvTransformation::getColorGeometry() {
+    return std::unique_ptr<CylindricalColorGeometry>();
 }

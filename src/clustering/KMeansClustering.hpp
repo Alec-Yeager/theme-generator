@@ -1,5 +1,5 @@
 #pragma once
-#include "../coloring/DistanceMetric.hpp"
+#include "../geometry/DistanceMetric.hpp"
 #include "ClusteringAlgorithm.hpp"
 
 class KMeansClustering : public ClusteringAlgorithm {
