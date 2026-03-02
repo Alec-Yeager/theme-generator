@@ -1,6 +1,6 @@
 #include "ImageHandler.hpp"
-#include "geometry/DistanceMetric.hpp"
-#include "geometry/EuclideanDistanceMetric.hpp"
+#include "geometry/ColorGeometry.hpp"
+#include "geometry/EuclideanColorGeometry.hpp"
 #include <spdlog/spdlog.h>
 
 ImageHandler::ImageHandler(const std::filesystem::path &path, std::shared_ptr<ClusteringAlgorithm> algorithm,
@@ -13,13 +13,13 @@ std::vector<cv::Vec3b> ImageHandler::calculateClusterMeans(size_t k) {
     for (auto stage : transforms_) {
         transformed_image_ = stage->transformImage(transformed_image_);
     }
-    std::unique_ptr<DistanceMetric> metric;
+    std::unique_ptr<ColorGeometry> geometry;
     if (transforms_.size() == 0) {
-        metric = std::make_unique<EuclideanDistanceMetric>();
+        geometry = std::make_unique<EuclideanColorGeometry>();
     } else {
-        metric = transforms_.back()->getDistanceMetric();
+        geometry = transforms_.back()->getColorGeometry();
     }
-    auto means = cluster_alg_->clusterValues(transformed_image_, k, *metric);
+    auto means = cluster_alg_->clusterValues(transformed_image_, k, *geometry);
     SPDLOG_DEBUG("Received {} means successfully.", means.size());
     // Now undo the color transforms to get BGR back (hopefully lol)
     for (auto rit = transforms_.rbegin(); rit != transforms_.rend(); ++rit) {

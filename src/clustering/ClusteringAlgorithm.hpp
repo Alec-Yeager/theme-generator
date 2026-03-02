@@ -1,5 +1,5 @@
 #pragma once
-#include "../geometry//DistanceMetric.hpp"
+#include "../geometry/DistanceMetric.hpp"
 #include <opencv2/opencv.hpp>
 #include <vector>
 
@@ -9,7 +9,7 @@ public:
     virtual ~ClusteringAlgorithm() = default;
 
     virtual std::vector<cv::Vec3b> clusterValues(const cv::Mat &image, const size_t n_clusters,
-                                                 const DistanceMetric &metric) = 0;
+                                                 const ColorGeometry &geometry) = 0;
 
 protected:
 };

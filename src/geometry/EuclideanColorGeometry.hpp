@@ -7,10 +7,10 @@
 class EuclideanColorGeometry : public ColorGeometry {
 public:
     EuclideanColorGeometry() : ColorGeometry() {};
-    std::unique_ptr<ColorAccumulator> getAccumulator() override {
+    std::unique_ptr<ColorAccumulator> getAccumulator() const override {
         return std::make_unique<EuclideanColorAccumulator>();
     };
-    std::unique_ptr<DistanceMetric> getDistanceMetric() override {
+    std::unique_ptr<DistanceMetric> getDistanceMetric() const override {
         return std::make_unique<EuclideanDistanceMetric>();
     };
 };
