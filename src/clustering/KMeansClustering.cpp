@@ -101,7 +101,8 @@ std::vector<cv::Vec3b> KMeansClusteringHamerly::clusterValues(const cv::Mat &ima
     // Cluster related vectors
     std::vector<cv::Vec3b> centroids = calcKppSeedCentroids(image, n_clusters, geometry);
     // No longer assumes ANYTHING about the geometry.
-    std::vector<std::unique_ptr<ColorAccumulator>> color_accumulators = std::vector<std::unique_ptr<ColorAccumulator>>();
+    std::vector<std::unique_ptr<ColorAccumulator>> color_accumulators =
+        std::vector<std::unique_ptr<ColorAccumulator>>();
     for (int j = 0; j < n_clusters; ++j) {
         color_accumulators.emplace_back(geometry.getAccumulator());
     }
@@ -227,7 +228,8 @@ std::vector<cv::Vec3b> KMeansClusteringHamerly::clusterValues(const cv::Mat &ima
         }
 
         // For now, a hack.
-        if (std::accumulate(distances_last_moved.begin(), distances_last_moved.end(), 0.0f) <= 0.0f || iteration >= max_iterations) {
+        if (std::accumulate(distances_last_moved.begin(), distances_last_moved.end(), 0.0f) <= 0.0f ||
+            iteration >= max_iterations) {
             converged = true;
             break;
         }

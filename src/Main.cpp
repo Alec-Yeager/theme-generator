@@ -1,4 +1,5 @@
 #include "ImageHandler.hpp"
+#include "clustering/ClusterReplay.hpp"
 #include "clustering/ClusteringAlgorithm.hpp"
 #include "clustering/DebugClustering.hpp"
 #include "clustering/KMeansClustering.hpp"
