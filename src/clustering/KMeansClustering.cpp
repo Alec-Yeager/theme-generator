@@ -90,6 +90,8 @@ std::vector<cv::Vec3b> KMeansClusteringHamerly::clusterValues(const cv::Mat &ima
     if (n_clusters == 0) {
         return std::vector<cv::Vec3b>();
     }
+    // This shouldn't be needed if I fix my shit.
+    auto max_iterations = 40;
 
     auto metric = geometry.getDistanceMetric();
 
@@ -98,9 +100,11 @@ std::vector<cv::Vec3b> KMeansClusteringHamerly::clusterValues(const cv::Mat &ima
     // Initialize our values.
     // Cluster related vectors
     std::vector<cv::Vec3b> centroids = calcKppSeedCentroids(image, n_clusters, geometry);
-    // admittedly this assumes an RGB image. Might update later for BW images... or 4 comp images...
-    std::vector<std::array<int64_t, 3>> cluster_vector_sums = std::vector<std::array<int64_t, 3>>(n_clusters);
-    std::vector<int32_t> n_points_in_clusters = std::vector<int32_t>(n_clusters);
+    // No longer assumes ANYTHING about the geometry.
+    std::vector<std::unique_ptr<ColorAccumulator>> color_accumulators = std::vector<std::unique_ptr<ColorAccumulator>>();
+    for (int j = 0; j < n_clusters; ++j) {
+        color_accumulators.emplace_back(geometry.getAccumulator());
+    }
     std::vector<float> distances_last_moved = std::vector<float>(n_clusters);
     std::vector<float> nearest_centroid_distances = std::vector<float>(n_clusters, INT32_MAX);
 
@@ -139,11 +143,8 @@ std::vector<cv::Vec3b> KMeansClusteringHamerly::clusterValues(const cv::Mat &ima
         int32_t fy = (*it)[1];
         int32_t fz = (*it)[2];
         pointAllCenters(fx, fy, fz, idx);
-        n_points_in_clusters[assigned_clusters[idx]] += 1;
-        auto &cluster_vector_sum = cluster_vector_sums[assigned_clusters[idx]];
-        cluster_vector_sum[0] += fx;
-        cluster_vector_sum[1] += fy;
-        cluster_vector_sum[2] += fz;
+
+        color_accumulators[assigned_clusters[idx]]->add(*it);
         ++idx;
     }
 
@@ -198,19 +199,8 @@ std::vector<cv::Vec3b> KMeansClusteringHamerly::clusterValues(const cv::Mat &ima
                     pointAllCenters(fx, fy, fz, idx);
                     // did our cluster change?
                     if (current_assigned_cluster != assigned_clusters[idx]) {
-                        n_points_in_clusters[current_assigned_cluster] -= 1;
-                        n_points_in_clusters[assigned_clusters[idx]] += 1;
-
-                        auto &old_cluster_vector_sum = cluster_vector_sums[current_assigned_cluster];
-                        auto &new_cluster_vector_sum = cluster_vector_sums[assigned_clusters[idx]];
-
-                        old_cluster_vector_sum[0] -= fx;
-                        old_cluster_vector_sum[1] -= fy;
-                        old_cluster_vector_sum[2] -= fz;
-
-                        new_cluster_vector_sum[0] += fx;
-                        new_cluster_vector_sum[1] += fy;
-                        new_cluster_vector_sum[2] += fz;
+                        color_accumulators[current_assigned_cluster]->subtract(*it);
+                        color_accumulators[assigned_clusters[idx]]->add(*it);
                     }
                 }
             }
@@ -222,25 +212,22 @@ std::vector<cv::Vec3b> KMeansClusteringHamerly::clusterValues(const cv::Mat &ima
 
             auto old_centroid = centroids[j];
             auto &centroid_ref = centroids[j];
-            auto vector_sum = cluster_vector_sums[j];
-            auto points_in_cluster = n_points_in_clusters[j];
 
             // Empty centroid problem.
-            if (points_in_cluster == 0) {
+            if (color_accumulators[j]->getCount() == 0) {
                 // pick a random pixel as the new centroid
                 int random_idx = rand() % image.total();
                 centroids[j] = image.at<cv::Vec3b>(random_idx / image.cols, random_idx % image.cols);
                 centroid_ref = centroids[j];
             } else {
-                centroid_ref[0] = vector_sum[0] / points_in_cluster;
-                centroid_ref[1] = vector_sum[1] / points_in_cluster;
-                centroid_ref[2] = vector_sum[2] / points_in_cluster;
+                centroid_ref = color_accumulators[j]->mean();
             }
 
             distances_last_moved[j] = metric->calculate(centroid_ref, old_centroid);
         }
 
-        if (std::accumulate(distances_last_moved.begin(), distances_last_moved.end(), 0.0f) == 0.0f) {
+        // For now, a hack.
+        if (std::accumulate(distances_last_moved.begin(), distances_last_moved.end(), 0.0f) <= 0.0f || iteration >= max_iterations) {
             converged = true;
             break;
         }

@@ -18,5 +18,5 @@ private:
     // (sin(theta), cos(theta)) = (0,0) is impossible, so this is safe as its nonreflective of a starting angle
     std::array<double, 2> angular_sum_{0.0, 0.0};
     std::array<int64_t, 2> linear_sum_{0, 0};
-    size_t count_;
+    size_t count_ = 0;
 };

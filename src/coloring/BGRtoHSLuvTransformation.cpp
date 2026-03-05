@@ -42,5 +42,5 @@ cv::Vec3b BGRtoHSLuvTransformation::transformPointBack(const cv::Vec3b &color) {
 }
 
 std::unique_ptr<ColorGeometry> BGRtoHSLuvTransformation::getColorGeometry() {
-    return std::unique_ptr<CylindricalColorGeometry>();
+    return std::make_unique<CylindricalColorGeometry>();
 }

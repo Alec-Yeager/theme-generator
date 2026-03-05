@@ -13,5 +13,5 @@ public:
 
 private:
     std::array<int64_t, 3> linear_sum_{0, 0, 0};
-    size_t count_;
+    size_t count_ = 0;
 };

@@ -17,8 +17,15 @@ std::vector<cv::Vec3b> ImageHandler::calculateClusterMeans(size_t k) {
     if (transforms_.size() == 0) {
         geometry = std::make_unique<EuclideanColorGeometry>();
     } else {
-        geometry = transforms_.back()->getColorGeometry();
+        geometry = std::move(transforms_.back()->getColorGeometry());
+        if (!geometry) {
+            SPDLOG_DEBUG("Something went REALLY wrong with the damn geometry");
+        }
     }
+    if (!geometry) {
+        SPDLOG_DEBUG("Something went wrong with the damn geometry");
+    }
+
     auto means = cluster_alg_->clusterValues(transformed_image_, k, *geometry);
     SPDLOG_DEBUG("Received {} means successfully.", means.size());
     // Now undo the color transforms to get BGR back (hopefully lol)
