@@ -14,12 +14,24 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(spdlog)
 
 find_package(OpenCV REQUIRED)
+find_package(VTK COMPONENTS 
+    CommonColor
+    CommonCore
+    FiltersSources
+    InteractionStyle
+    RenderingContextOpenGL2
+    RenderingCore
+    RenderingFreeType
+    RenderingGL2PSOpenGL2
+    RenderingOpenGL2
+)
 
 # For now laziliy just find all source files. It might be more than one exec later but eh
 file(GLOB SRC_LIST "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
 file(GLOB CLUSTERING_LIST "${CMAKE_CURRENT_SOURCE_DIR}/src/clustering/*.cpp")
 file(GLOB COLORING_LIST "${CMAKE_CURRENT_SOURCE_DIR}/src/coloring/*.cpp")
 file(GLOB GEOMETRY_LIST "${CMAKE_CURRENT_SOURCE_DIR}/src/geometry/*.cpp")
+file(GLOB VISUALIZATION_LIST "${CMAKE_CURRENT_SOURCE_DIR}/src/visualization/*.cpp")
 
 
 # Add source files
@@ -28,6 +40,7 @@ add_executable(theme-generator
     ${CLUSTERING_LIST}
     ${COLORING_LIST}
     ${GEOMETRY_LIST}
+    ${VISUALIZATION_LIST}
     ${CMAKE_CURRENT_SOURCE_DIR}/src/coloring/hsluv.c
 )
 
@@ -39,4 +52,4 @@ target_compile_definitions(theme-generator PRIVATE
 target_include_directories(theme-generator PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
-target_link_libraries(theme-generator PRIVATE ${OpenCV_LIBS} spdlog::spdlog)
+target_link_libraries(theme-generator PRIVATE ${OpenCV_LIBS} spdlog::spdlog ${VTK_LIBRARIES})

@@ -5,6 +5,7 @@
 #include "clustering/OptimizedKMeansClustering.hpp"
 #include "coloring/BGRtoHSLuvTransformation.hpp"
 #include "coloring/ColorTransformation.hpp"
+#include "visualization/BasicVTK.hpp"
 
 #include <filesystem>
 #include <iostream>
@@ -35,8 +36,12 @@ int main(int argc, char const *argv[]) {
         }
     }
 
+    BasicVTK vtk_tester{};
+    vtk_tester.run();
+
     // This is a bit stupid, prolly a better way to handle the empty handlers
     for (auto &ih : imageHandlers) {
+        continue;
         std::string name = ih.path().filename().string();
         SPDLOG_DEBUG("Displaying image: {}.", name);
         if (ih.image().empty()) {
@@ -46,7 +51,7 @@ int main(int argc, char const *argv[]) {
 
         // auto &val = ih.image().at<cv::Vec3b>(0, 0);
         //  SPDLOG_DEBUG("RGB: ({},{},{})", val[0], val[1], val[2]);
-        
+
         ih.setClusterAlg(hamerly_k_means_optimized);
         ih.calculateClusterMeans(8);
         ih.displayMeansInImage();
@@ -60,9 +65,9 @@ int main(int argc, char const *argv[]) {
         cv::imshow(name, ih.paletteImage());
     }
 
-    while (!((cv::waitKey(1) & 0xEFFFFF) == 27))
-        ;
-    cv::destroyAllWindows();
+    // while (!((cv::waitKey(1) & 0xEFFFFF) == 27))
+    //     ;
+    // cv::destroyAllWindows();
 
     return 0;
 }
