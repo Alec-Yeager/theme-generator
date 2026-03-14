@@ -22,9 +22,9 @@ cv::Vec3b EuclideanColorAccumulator::mean(size_t n) {
         n = count_;
     }
 
-    SPDLOG_DEBUG("average b, g, r: ({}, {}, {})", std::round(static_cast<double>(linear_sum_[0]) / n),
-                 std::round(static_cast<double>(linear_sum_[1]) / n),
-                 std::round(static_cast<double>(linear_sum_[2]) / n));
+    // SPDLOG_DEBUG("average b, g, r: ({}, {}, {})", std::round(static_cast<double>(linear_sum_[0]) / n),
+    //              std::round(static_cast<double>(linear_sum_[1]) / n),
+    //              std::round(static_cast<double>(linear_sum_[2]) / n));
 
     return cv::Vec3b{static_cast<u_char>(std::round(static_cast<double>(linear_sum_[0]) / n)),
                      static_cast<u_char>(std::round(static_cast<double>(linear_sum_[1]) / n)),

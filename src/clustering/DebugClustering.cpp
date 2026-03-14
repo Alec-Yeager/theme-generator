@@ -2,7 +2,7 @@
 #include <spdlog/spdlog.h>
 
 std::vector<cv::Vec3b> DebugClustering::clusterValues(const cv::Mat &image, const size_t n_clusters,
-                                                      const ColorGeometry &geometry) {
+                                                      const ColorGeometry &geometry, ClusterTracker &tracker) {
     SPDLOG_DEBUG("n clusters: {}", n_clusters);
     auto cluster_means = std::vector<cv::Vec3b>();
     cluster_means.reserve(n_clusters);

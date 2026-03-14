@@ -13,6 +13,8 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(spdlog)
 
+find_package(jsoncpp REQUIRED)
+# find_package(nlohmann_json REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(VTK COMPONENTS 
     CommonColor

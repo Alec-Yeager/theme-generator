@@ -28,7 +28,6 @@ int main(int argc, char const *argv[]) {
     auto debug_clustering_alg = std::make_shared<DebugClustering>();
     auto hamerly_k_means = std::make_shared<KMeansClusteringHamerly>();
     auto hamerly_k_means_optimized = std::make_shared<OptimizedKMeansClusteringHamerly>();
-    auto naive_k_means = std::make_shared<KMeansClusteringNaive>();
 
     for (const auto &entry : fs::directory_iterator("../test/images")) {
         if (fs::is_regular_file(entry)) {
@@ -38,11 +37,11 @@ int main(int argc, char const *argv[]) {
     }
 
     BasicVTK vtk_tester{};
-    vtk_tester.run();
+    // vtk_tester.run();
 
     // This is a bit stupid, prolly a better way to handle the empty handlers
     for (auto &ih : imageHandlers) {
-        continue;
+        // continue;
         std::string name = ih.path().filename().string();
         SPDLOG_DEBUG("Displaying image: {}.", name);
         if (ih.image().empty()) {
@@ -53,22 +52,22 @@ int main(int argc, char const *argv[]) {
         // auto &val = ih.image().at<cv::Vec3b>(0, 0);
         //  SPDLOG_DEBUG("RGB: ({},{},{})", val[0], val[1], val[2]);
 
-        ih.setClusterAlg(hamerly_k_means_optimized);
+        ih.setClusterAlg(hamerly_k_means);
         ih.calculateClusterMeans(8);
         ih.displayMeansInImage();
-        // ih.setTransforms(
-        //     std::vector<std::shared_ptr<ColorTransformation>>{std::make_shared<BGRtoHSLuvTransformation>()});
-        // ih.setClusterAlg(hamerly_k_means);
-        // ih.calculateClusterMeans(8);
-        // ih.displayMeansInImage();
+        ih.setTransforms(
+            std::vector<std::shared_ptr<ColorTransformation>>{std::make_shared<BGRtoHSLuvTransformation>()});
+        ih.setClusterAlg(hamerly_k_means);
+        ih.calculateClusterMeans(8);
+        ih.displayMeansInImage();
 
         cv::namedWindow(name);
         cv::imshow(name, ih.paletteImage());
     }
 
-    // while (!((cv::waitKey(1) & 0xEFFFFF) == 27))
-    //     ;
-    // cv::destroyAllWindows();
+    while (!((cv::waitKey(1) & 0xEFFFFF) == 27))
+        ;
+    cv::destroyAllWindows();
 
     return 0;
 }

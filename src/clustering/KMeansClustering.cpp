@@ -3,6 +3,7 @@
 #include <chrono>
 #include <random>
 #include <spdlog/spdlog.h>
+#include <sstream>
 
 // This assumes a 3 component image. Might update later to allow for other sizes.
 std::vector<cv::Vec3b> KMeansClustering::calcKppSeedCentroids(const cv::Mat &image, const size_t n_clusters,
@@ -86,7 +87,7 @@ std::vector<cv::Vec3b> KMeansClustering::randomSeedCentroids(const cv::Mat &imag
 
 // Thanks Hamerly, this DOES require 2 clusters min tho
 std::vector<cv::Vec3b> KMeansClusteringHamerly::clusterValues(const cv::Mat &image, const size_t n_clusters,
-                                                              const ColorGeometry &geometry) {
+                                                              const ColorGeometry &geometry, ClusterTracker &tracker) {
     if (n_clusters == 0) {
         return std::vector<cv::Vec3b>();
     }
@@ -149,6 +150,8 @@ std::vector<cv::Vec3b> KMeansClusteringHamerly::clusterValues(const cv::Mat &ima
         ++idx;
     }
 
+    tracker.setInitialMeansAndAssignments(centroids, assigned_clusters);
+
     bool converged = false;
     int iteration = 0;
 
@@ -157,6 +160,8 @@ std::vector<cv::Vec3b> KMeansClusteringHamerly::clusterValues(const cv::Mat &ima
         for (auto cent : centroids) {
             SPDLOG_DEBUG("\t({}, {}, {})", cent[0], cent[1], cent[2]);
         }
+
+        auto current_cluster_stage = ClusterStage(centroids);
 
         // j index to match literature.
         // Reset the nearest distances.
@@ -202,6 +207,8 @@ std::vector<cv::Vec3b> KMeansClusteringHamerly::clusterValues(const cv::Mat &ima
                     if (current_assigned_cluster != assigned_clusters[idx]) {
                         color_accumulators[current_assigned_cluster]->subtract(*it);
                         color_accumulators[assigned_clusters[idx]]->add(*it);
+                        // tracking the change for extraction.
+                        current_cluster_stage.addDelta(idx, current_assigned_cluster, assigned_clusters[idx]);
                     }
                 }
             }
@@ -230,6 +237,7 @@ std::vector<cv::Vec3b> KMeansClusteringHamerly::clusterValues(const cv::Mat &ima
         // For now, a hack.
         if (std::accumulate(distances_last_moved.begin(), distances_last_moved.end(), 0.0f) <= 0.0f ||
             iteration >= max_iterations) {
+            tracker.addStage(current_cluster_stage);
             converged = true;
             break;
         }
@@ -262,6 +270,8 @@ std::vector<cv::Vec3b> KMeansClusteringHamerly::clusterValues(const cv::Mat &ima
                     std::max(0.0f, distance_lower_bounds[i] - distances_last_moved[greatest_moved_center]);
             }
         }
+
+        tracker.addStage(current_cluster_stage);
         iteration++;
     }
 
@@ -279,7 +289,8 @@ std::vector<cv::Vec3b> KMeansClusteringHamerly::clusterValues(const cv::Mat &ima
     return centroids;
 }
 
-// STILL GOTTA FIX THIS LATER LOL
+// Deprecating this. Keeping it here for the culture.
+/*
 std::vector<cv::Vec3b> KMeansClusteringNaive::clusterValues(const cv::Mat &image, const size_t n_clusters,
                                                             const ColorGeometry &geometry) {
     if (n_clusters == 0) {
@@ -363,3 +374,4 @@ std::vector<cv::Vec3b> KMeansClusteringNaive::clusterValues(const cv::Mat &image
 
     return centroids;
 }
+*/

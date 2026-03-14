@@ -18,7 +18,12 @@ public:
     void setTransforms(std::vector<std::shared_ptr<ColorTransformation>> transforms) { transforms_ = transforms; };
     void setClusterAlg(std::shared_ptr<ClusteringAlgorithm> cluster_alg) { cluster_alg_ = cluster_alg; };
 
-    std::vector<cv::Vec3b> calculateClusterMeans(size_t k);
+    std::vector<cv::Vec3b> calculateClusterMeans(size_t k, ClusterTracker &tracker);
+    std::vector<cv::Vec3b> calculateClusterMeans(size_t k) {
+        auto tracker = ClusterTracker();
+        return calculateClusterMeans(k, tracker);
+    }
+
     void displayMeansInImage(std::vector<cv::Vec3b> means);
     void displayMeansInImage() { displayMeansInImage(means_); };
 

@@ -1,4 +1,5 @@
 #include "ImageHandler.hpp"
+#include "clustering/ClusterTracker.hpp"
 #include "geometry/ColorGeometry.hpp"
 #include "geometry/EuclideanColorGeometry.hpp"
 #include <spdlog/spdlog.h>
@@ -8,7 +9,7 @@ ImageHandler::ImageHandler(const std::filesystem::path &path, std::shared_ptr<Cl
     : filepath_(path), image_(cv::imread(path)), palette_image_(image_), cluster_alg_(algorithm),
       transforms_(transforms) {}
 
-std::vector<cv::Vec3b> ImageHandler::calculateClusterMeans(size_t k) {
+std::vector<cv::Vec3b> ImageHandler::calculateClusterMeans(size_t k, ClusterTracker &tracker) {
     transformed_image_ = image_;
     for (auto stage : transforms_) {
         transformed_image_ = stage->transformImage(transformed_image_);
@@ -26,7 +27,7 @@ std::vector<cv::Vec3b> ImageHandler::calculateClusterMeans(size_t k) {
         SPDLOG_DEBUG("Something went wrong with the damn geometry");
     }
 
-    auto means = cluster_alg_->clusterValues(transformed_image_, k, *geometry);
+    auto means = cluster_alg_->clusterValues(transformed_image_, k, *geometry, tracker);
     SPDLOG_DEBUG("Received {} means successfully.", means.size());
     // Now undo the color transforms to get BGR back (hopefully lol)
     for (auto rit = transforms_.rbegin(); rit != transforms_.rend(); ++rit) {

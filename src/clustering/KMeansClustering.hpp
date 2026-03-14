@@ -1,13 +1,14 @@
 #pragma once
 #include "../geometry/ColorGeometry.hpp"
 #include "../geometry/DistanceMetric.hpp"
+#include "./ClusterTracker.hpp"
 #include "ClusteringAlgorithm.hpp"
 
 class KMeansClustering : public ClusteringAlgorithm {
 public:
     KMeansClustering() : ClusteringAlgorithm() {};
     virtual std::vector<cv::Vec3b> clusterValues(const cv::Mat &image, const size_t n_clusters,
-                                                 const ColorGeometry &geometry) override = 0;
+                                                 const ColorGeometry &geometry, ClusterTracker &tracker) override = 0;
 
 protected:
     virtual std::vector<cv::Vec3b> calcKppSeedCentroids(const cv::Mat &image, const size_t n_clusters,
@@ -19,13 +20,15 @@ protected:
 class KMeansClusteringHamerly : public KMeansClustering {
 public:
     KMeansClusteringHamerly() : KMeansClustering() {};
-    std::vector<cv::Vec3b> clusterValues(const cv::Mat &image, const size_t n_clusters,
-                                         const ColorGeometry &geometry) override;
+    std::vector<cv::Vec3b> clusterValues(const cv::Mat &image, const size_t n_clusters, const ColorGeometry &geometry,
+                                         ClusterTracker &tracker) override;
 };
 
-class KMeansClusteringNaive : public KMeansClustering {
-public:
-    KMeansClusteringNaive() : KMeansClustering() {};
-    std::vector<cv::Vec3b> clusterValues(const cv::Mat &image, const size_t n_clusters,
-                                         const ColorGeometry &geometry) override;
-};
+// // Deprecating this. Keeping it here for the culture.
+// class KMeansClusteringNaive : public KMeansClustering {
+// public:
+//     KMeansClusteringNaive() : KMeansClustering() {};
+//     std::vector<cv::Vec3b> clusterValues(const cv::Mat &image, const size_t n_clusters, const ColorGeometry
+//     &geometry,
+//                                          ClusterTracker &tracker) override;
+// };
