@@ -13,4 +13,6 @@ public:
     std::unique_ptr<DistanceMetric> getDistanceMetric() const override {
         return std::make_unique<EuclideanDistanceMetric>();
     };
+    cv::Vec3b getXYZ(cv::Vec3b colorPoint) const override { return colorPoint; };
+    GeometryType getGeometryType() const { return GeometryType::EUCLIDEAN; };
 };

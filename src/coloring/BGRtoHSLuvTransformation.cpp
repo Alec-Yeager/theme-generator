@@ -16,6 +16,19 @@ cv::Mat BGRtoHSLuvTransformation::transformImage(const cv::Mat &image) {
     return transformed_image;
 }
 
+cv::Mat BGRtoHSLuvTransformation::transformImageBack(const cv::Mat &image) {
+
+    SPDLOG_DEBUG("Transforming image from BGR to HSLuv");
+    auto transformed_image = cv::Mat(image.rows, image.cols, image.type());
+    auto it1 = image.begin<cv::Vec3b>();
+    auto it2 = transformed_image.begin<cv::Vec3b>();
+    for (; it1 != image.end<cv::Vec3b>() && it2 != transformed_image.end<cv::Vec3b>(); ++it1, ++it2) {
+        *it2 = transformPointBack(*it1);
+    }
+    SPDLOG_DEBUG("Image transformed back.");
+    return transformed_image;
+}
+
 cv::Vec3b BGRtoHSLuvTransformation::transformPoint(const cv::Vec3b &color) {
     double h, s, l;
     rgb2hsluv(static_cast<double>(color[2]) / 255.0, static_cast<double>(color[1]) / 255.0,

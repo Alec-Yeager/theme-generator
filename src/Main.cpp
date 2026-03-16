@@ -6,7 +6,7 @@
 #include "clustering/OptimizedKMeansClustering.hpp"
 #include "coloring/BGRtoHSLuvTransformation.hpp"
 #include "coloring/ColorTransformation.hpp"
-#include "visualization/BasicVTK.hpp"
+#include "visualization/ClusteringVisualizer.hpp"
 
 #include <filesystem>
 #include <iostream>
@@ -36,7 +36,6 @@ int main(int argc, char const *argv[]) {
         }
     }
 
-    BasicVTK vtk_tester{};
     // vtk_tester.run();
 
     // This is a bit stupid, prolly a better way to handle the empty handlers
@@ -52,17 +51,23 @@ int main(int argc, char const *argv[]) {
         // auto &val = ih.image().at<cv::Vec3b>(0, 0);
         //  SPDLOG_DEBUG("RGB: ({},{},{})", val[0], val[1], val[2]);
 
+        auto hsluv_transform = std::make_shared<BGRtoHSLuvTransformation>();
+        auto replay = ClusterReplay(ClusterTracker());
+        ClusteringVisualizer vizualizer_test{ih.image(), replay};
+
         ih.setClusterAlg(hamerly_k_means);
         ih.calculateClusterMeans(8);
         ih.displayMeansInImage();
-        ih.setTransforms(
-            std::vector<std::shared_ptr<ColorTransformation>>{std::make_shared<BGRtoHSLuvTransformation>()});
-        ih.setClusterAlg(hamerly_k_means);
-        ih.calculateClusterMeans(8);
-        ih.displayMeansInImage();
+        // ih.setTransforms(std::vector<std::shared_ptr<ColorTransformation>>{hsluv_transform});
+        // ih.setClusterAlg(hamerly_k_means);
+        // ih.calculateClusterMeans(8);
+        // ih.displayMeansInImage();
 
         cv::namedWindow(name);
         cv::imshow(name, ih.paletteImage());
+        cv::waitKey(1);
+        vizualizer_test.run();
+        cv::destroyAllWindows();
     }
 
     while (!((cv::waitKey(1) & 0xEFFFFF) == 27))

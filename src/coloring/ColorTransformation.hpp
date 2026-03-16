@@ -6,8 +6,12 @@
 class ColorTransformation {
 public:
     virtual ~ColorTransformation() = default;
-    virtual cv::Mat transformImage(const cv::Mat &image) = 0;
     virtual cv::Vec3b transformPoint(const cv::Vec3b &color) = 0;
+    virtual cv::Mat transformImage(const cv::Mat &image) = 0;
+
+    // Might not always be possible in the case of lossy transforms such as clamping. Oh well.
     virtual cv::Vec3b transformPointBack(const cv::Vec3b &color) = 0;
+    virtual cv::Mat transformImageBack(const cv::Mat &image) = 0;
+
     virtual std::unique_ptr<ColorGeometry> getColorGeometry() = 0;
 };

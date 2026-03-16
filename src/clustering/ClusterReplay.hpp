@@ -9,7 +9,7 @@
 class ClusterReplay {
 public:
     ClusterReplay(ClusterTracker tracker)
-        : tracker_(tracker), current_stage_assignments(tracker.getInitialClusterAssignments()) {};
+        : tracker_(tracker), current_cluster_assignments_(tracker.getInitialClusterAssignments()) {};
     ~ClusterReplay() = default;
 
     // Sets to stage 0
@@ -22,6 +22,8 @@ public:
     void increment();
     // decrement stage by 1
     void decrement();
+    // set stage (uses inc/dec under the hood)
+    void setStage(size_t stage);
 
     const std::vector<cv::Vec3b> &getClusterMeans() const {
         return tracker_.getStages()[current_stage_].getClusterMeans();
@@ -30,6 +32,6 @@ public:
 
 private:
     ClusterTracker tracker_;
-    std::vector<size_t> current_stage_assignments;
+    std::vector<size_t> current_cluster_assignments_;
     size_t current_stage_{0};
 };
