@@ -15,6 +15,9 @@ ClusteringVisualizer::ClusteringVisualizer(cv::Mat image, ColorTransformation *t
 ClusteringVisualizer::~ClusteringVisualizer() {
     // viewer_.getRenderWindow();
     cs_actor_.release();
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
     glfwTerminate();
 }
 
@@ -97,6 +100,7 @@ void ClusteringVisualizer::initImGUI() {
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;   // Enable Docking
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; // Enable Multi-Viewport / Platform Windows'
     ImGui::StyleColorsDark();
+    SPDLOG_DEBUG("Initializing ImGUI for new window.");
     ImGui_ImplGlfw_InitForOpenGL(window_, true);
     ImGui_ImplOpenGL3_Init(glsl_version);
 }
