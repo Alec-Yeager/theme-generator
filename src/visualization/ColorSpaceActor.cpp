@@ -3,8 +3,8 @@
 #include "../geometry/ColorGeometry.hpp"
 #include "../geometry/EuclideanColorGeometry.hpp"
 #include <spdlog/spdlog.h>
-#include <vtk/vtkCellArray.h>
-#include <vtk/vtkPointData.h>
+#include <vtkCellArray.h>
+#include <vtkPointData.h>
 
 ColorSpaceActor::ColorSpaceActor(cv::Mat image, ColorTransformation *transform) {
     std::unique_ptr<ColorGeometry> geometry;
@@ -69,6 +69,10 @@ void ColorSpaceActor::createAxes(ColorTransformation *transform) {
     }
 }
 
-vtkSmartPointer<vtkActor> ColorSpaceActor::createCubeAxes(ColorTransformation *transform) {}
+vtkSmartPointer<vtkActor> ColorSpaceActor::createCubeAxes(ColorTransformation *transform) {
+    return vtkSmartPointer<vtkActor>::New();
+}
 
-vtkSmartPointer<vtkActor> ColorSpaceActor::createCylinderAxes(ColorTransformation *transform) {}
+vtkSmartPointer<vtkActor> ColorSpaceActor::createCylinderAxes(ColorTransformation *transform) {
+    return vtkSmartPointer<vtkActor>::New();
+}

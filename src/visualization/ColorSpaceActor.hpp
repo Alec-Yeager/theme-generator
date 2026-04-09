@@ -2,15 +2,15 @@
 #include "../coloring/ColorTransformation.hpp"
 #include "../geometry/ColorGeometry.hpp"
 #include <opencv2/opencv.hpp>
-#include <vtk/vtkActor.h>
-#include <vtk/vtkNew.h>
-#include <vtk/vtkObject.h>
-#include <vtk/vtkPoints.h>
-#include <vtk/vtkPolyData.h>
-#include <vtk/vtkPolyDataMapper.h>
-#include <vtk/vtkProperty.h>
-#include <vtk/vtkRenderer.h>
-#include <vtk/vtkSphereSource.h>
+#include <vtkActor.h>
+#include <vtkNew.h>
+#include <vtkObject.h>
+#include <vtkPoints.h>
+#include <vtkPolyData.h>
+#include <vtkPolyDataMapper.h>
+#include <vtkProperty.h>
+#include <vtkRenderer.h>
+#include <vtkSphereSource.h>
 
 class ColorSpaceActor {
 public:

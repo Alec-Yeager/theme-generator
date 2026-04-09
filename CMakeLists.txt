@@ -1,4 +1,5 @@
-cmake_minimum_required(VERSION 4.1)
+cmake_minimum_required(VERSION 3.5...3.31)
+set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
 project(theme-generator)
 
 set(CMAKE_CXX_STANDARD 20)
@@ -13,9 +14,16 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(spdlog)
 
+# Add in the imgui
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/deps/imgui")
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/deps/imgui/backends")
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/deps/imgui/misc/cpp")
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/deps/glad/include")
+
 find_package(jsoncpp REQUIRED)
 # find_package(nlohmann_json REQUIRED)
 find_package(OpenCV REQUIRED)
+# find_package(OpenGL REQUIRED)
 find_package(VTK COMPONENTS 
     CommonColor
     CommonCore
@@ -24,7 +32,6 @@ find_package(VTK COMPONENTS
     RenderingContextOpenGL2
     RenderingCore
     RenderingFreeType
-    RenderingGL2PSOpenGL2
     RenderingOpenGL2
 )
 
@@ -34,6 +41,9 @@ file(GLOB CLUSTERING_LIST "${CMAKE_CURRENT_SOURCE_DIR}/src/clustering/*.cpp")
 file(GLOB COLORING_LIST "${CMAKE_CURRENT_SOURCE_DIR}/src/coloring/*.cpp")
 file(GLOB GEOMETRY_LIST "${CMAKE_CURRENT_SOURCE_DIR}/src/geometry/*.cpp")
 file(GLOB VISUALIZATION_LIST "${CMAKE_CURRENT_SOURCE_DIR}/src/visualization/*.cpp")
+file(GLOB DEP_IMGUI_LIST "${CMAKE_CURRENT_SOURCE_DIR}/deps/imgui/*.cpp")
+file(GLOB DEP_GLAD_LIST "${CMAKE_CURRENT_SOURCE_DIR}/deps/glad/src/*.c")
+set(DEP_IMGUI_BACKENDS "${CMAKE_CURRENT_SOURCE_DIR}/deps/imgui/backends/imgui_impl_glfw.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/deps/imgui/backends/imgui_impl_opengl3.cpp")
 
 
 # Add source files
@@ -43,6 +53,10 @@ add_executable(theme-generator
     ${COLORING_LIST}
     ${GEOMETRY_LIST}
     ${VISUALIZATION_LIST}
+    ${DEP_IMGUI_LIST}
+    ${DEP_IMGUI_BACKENDS}
+    ${DEP_GLAD_LIST}
+    ${CMAKE_CURRENT_SOURCE_DIR}/deps/imgui/misc/cpp/imgui_stdlib.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/coloring/hsluv.c
 )
 
@@ -54,4 +68,4 @@ target_compile_definitions(theme-generator PRIVATE
 target_include_directories(theme-generator PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
-target_link_libraries(theme-generator PRIVATE ${OpenCV_LIBS} spdlog::spdlog ${VTK_LIBRARIES})
+target_link_libraries(theme-generator PRIVATE ${OpenCV_LIBS} spdlog::spdlog ${VTK_LIBRARIES} glfw)

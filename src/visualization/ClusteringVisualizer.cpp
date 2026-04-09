@@ -1,22 +1,102 @@
+#include <glad/glad.h>
+
+#include <GLFW/glfw3.h>
+
+// One of the below includes some gl stuff that conflict with GLAD. Keep it up there.
 #include "ClusteringVisualizer.hpp"
+#include "ColorSpaceActor.hpp"
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
 
 ClusteringVisualizer::ClusteringVisualizer(cv::Mat image, ColorTransformation *transform, ClusterReplay &replay)
-    : cs_actor_(image, transform), replay_(replay) {}
+    : cs_actor_(std::make_unique<ColorSpaceActor>(image, transform)), replay_(replay) {}
 
-ClusteringVisualizer::~ClusteringVisualizer() {}
+ClusteringVisualizer::~ClusteringVisualizer() {
+    // viewer_.getRenderWindow();
+    cs_actor_.release();
+    glfwTerminate();
+}
+
+static void glfw_error_callback(int error, const char *description) {
+    SPDLOG_ERROR("Glfw Error {}: {}\n", error, description);
+}
 
 void ClusteringVisualizer::run() {
 
-    iren_->SetInteractorStyle(camera_interactor_style_);
+    SPDLOG_DEBUG("Initializing GLAD");
+    initGLFW();
+    initImGUI();
+
+    viewer_ = VtkViewer();
+    viewer_.init();
+
+    // iren_->SetInteractorStyle(camera_interactor_style_);
+    viewer_.setInteractorStyle(camera_interactor_style_);
+    viewer_.setRenderer(ren_);
 
     // Add the actor constructed by cs_actor_
     ren_->SetBackground(1.0, 1.0, 1.0);
-    ren_->AddActor(cs_actor_.getActor());
-    win_->AddRenderer(ren_);
-    iren_->SetRenderWindow(win_);
+    ren_->AddActor(cs_actor_->getActor());
+    // win_->AddRenderer(ren_);
+    // iren_->SetRenderWindow(win_);
 
-    iren_->Render();
-    iren_->Start();
+    // while (!glfwWindowShouldClose(window_)) {
+
+    glfwPollEvents();
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+
+    // ImGui::SetNextWindowSize(ImVec2(360, 240), ImGuiCond_FirstUseEver);
+    ImGui::Begin("Vtk Viewer 1", nullptr, VtkViewer::NoScrollFlags());
+    viewer_.render(); // default render size = ImGui::GetContentRegionAvail()
+    ImGui::End();
+
+    ImGui::Render();
+    glfwSwapBuffers(window_);
+    // }
+
+    glfwDestroyWindow(window_);
+    window_ = nullptr;
+    // iren_->Render();
+    // iren_->Start();
 
     return;
+}
+
+void ClusteringVisualizer::initGLFW() {
+    glfwSetErrorCallback(glfw_error_callback);
+    if (!glfwInit()) {
+        SPDLOG_ERROR("Failed to init glfw");
+        return;
+    }
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
+
+    window_ = glfwCreateWindow(1280, 720, "Dear ImGui VTKViewer Example", NULL, NULL);
+    if (window_ == NULL) {
+        SPDLOG_ERROR("Failed to create glfw Window");
+        glfwTerminate();
+        return;
+    }
+
+    glfwMakeContextCurrent(window_);
+    gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+    glfwSwapInterval(1); // Enable vsync, do I need this?
+}
+
+void ClusteringVisualizer::initImGUI() {
+    const char *glsl_version = "#version 130";
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO &io = ImGui::GetIO();
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;   // Enable Docking
+    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; // Enable Multi-Viewport / Platform Windows'
+    ImGui::StyleColorsDark();
+    ImGui_ImplGlfw_InitForOpenGL(window_, true);
+    ImGui_ImplOpenGL3_Init(glsl_version);
 }

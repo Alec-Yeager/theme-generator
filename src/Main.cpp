@@ -12,6 +12,7 @@
 #include <iostream>
 #include <opencv2/opencv.hpp>
 #include <spdlog/spdlog.h>
+#include <vtkVersion.h>
 
 namespace fs = std::filesystem;
 
@@ -23,6 +24,7 @@ int main(int argc, char const *argv[]) {
     spdlog::set_level(spdlog::level::debug);
 #endif
 
+    SPDLOG_DEBUG("VTK version: {}", vtkVersion::GetVTKVersion());
     SPDLOG_DEBUG("Currently in: {}", fs::current_path().string());
     std::vector<ImageHandler> imageHandlers{};
     auto debug_clustering_alg = std::make_shared<DebugClustering>();
@@ -55,24 +57,26 @@ int main(int argc, char const *argv[]) {
         auto replay = ClusterReplay(ClusterTracker());
         ClusteringVisualizer vizualizer_test{ih.image(), replay};
 
-        ih.setClusterAlg(hamerly_k_means);
-        ih.calculateClusterMeans(8);
-        ih.displayMeansInImage();
+        // ih.setClusterAlg(hamerly_k_means);
+        // ih.calculateClusterMeans(8);
+        // ih.displayMeansInImage();
         // ih.setTransforms(std::vector<std::shared_ptr<ColorTransformation>>{hsluv_transform});
         // ih.setClusterAlg(hamerly_k_means);
         // ih.calculateClusterMeans(8);
         // ih.displayMeansInImage();
 
-        cv::namedWindow(name);
-        cv::imshow(name, ih.paletteImage());
-        cv::waitKey(1);
+        // cv::namedWindow(name);
+        // cv::imshow(name, ih.paletteImage());
+        // cv::waitKey(1);
+        SPDLOG_DEBUG("About to call vizualizer_test.run()");
         vizualizer_test.run();
-        cv::destroyAllWindows();
+        SPDLOG_DEBUG("Returned from vizualizer_test.run()");
+        // cv::destroyAllWindows();
     }
 
-    while (!((cv::waitKey(1) & 0xEFFFFF) == 27))
-        ;
-    cv::destroyAllWindows();
+    // while (!((cv::waitKey(1) & 0xEFFFFF) == 27))
+    //     ;
+    // cv::destroyAllWindows();
 
     return 0;
 }
