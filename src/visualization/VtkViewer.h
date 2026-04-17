@@ -59,8 +59,6 @@ public:
     IMGUI_IMPL_API void init();
     VtkViewer &operator=(const VtkViewer &vtkViewer);
 
-    // private:
-
 public:
     IMGUI_IMPL_API void render();
     IMGUI_IMPL_API void render(const ImVec2 size);
@@ -68,6 +66,8 @@ public:
     IMGUI_IMPL_API void addActors(const vtkSmartPointer<vtkPropCollection> &actors);
     IMGUI_IMPL_API void removeActor(const vtkSmartPointer<vtkProp> &actor);
     void setViewportSize(const ImVec2 newSize);
+
+    void setRenderer(const vtkSmartPointer<vtkRenderer> &renderer);
 
 public:
     static inline unsigned int NoScrollFlags() {
@@ -84,8 +84,6 @@ public:
     inline void setInteractorStyle(const vtkSmartPointer<vtkInteractorStyleSwitch> &interactorStyle) {
         this->interactorStyle = interactorStyle;
     }
-
-    inline void setRenderer(const vtkSmartPointer<vtkRenderer> &renderer) { this->renderer = renderer; }
 
 public:
     inline vtkSmartPointer<vtkGenericOpenGLRenderWindow> &getRenderWindow() { return renderWindow; }

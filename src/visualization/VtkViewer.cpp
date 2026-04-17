@@ -34,6 +34,11 @@
 // Include glfw3.h after our OpenGL definitions
 #include <GLFW/glfw3.h>
 
+// Including opencv for the debug write
+#include <opencv2/opencv.hpp>
+#include <vtkPNGWriter.h>
+#include <vtkWindowToImageFilter.h>
+
 void VtkViewer::isCurrentCallbackFn(vtkObject *caller, long unsigned int eventId, void *clientData, void *callData) {
     bool *isCurrent = static_cast<bool *>(callData);
     *isCurrent = true;
@@ -160,6 +165,25 @@ void VtkViewer::render(const ImVec2 size) {
     renderWindow->Render();
     renderWindow->WaitForCompletion();
 
+    vtkNew<vtkWindowToImageFilter> wtoi;
+    vtkNew<vtkPNGWriter> writer;
+
+    wtoi->SetInput(renderWindow);
+    wtoi->Update();
+
+    writer->SetFileName("/home/ayeager/Projects/theme-generator/test/outputs/render.png");
+    writer->SetInputConnection(wtoi->GetOutputPort());
+    writer->Write();
+
+        std::vector<unsigned char> pixels(size.x * size.y * 4);
+    glReadPixels(0, 0, size.x, size.y, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data());
+
+    cv::Mat rgba_img(size.y, size.x, CV_8UC4, pixels.data());
+    cv::Mat bgra_img;
+    cv::cvtColor(rgba_img, bgra_img, cv::COLOR_RGBA2BGRA);
+
+    cv::imwrite("/home/ayeager/Projects/theme-generator/test/outputs/tex.png", bgra_img);
+
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
     ImGui::BeginChild("##Viewport", size, true, VtkViewer::NoScrollFlags());
     ImGui::Image(reinterpret_cast<void *>(tex_), ImGui::GetContentRegionAvail(), ImVec2(0, 1), ImVec2(1, 0));
@@ -197,8 +221,9 @@ void VtkViewer::setViewportSize(const ImVec2 newSize) {
     int viewportSize[] = {static_cast<int>(newSize.x), static_cast<int>(newSize.y)};
 
     // Free old buffers
-    SPDLOG_DEBUG("First render? {}", firstRender_);
-    SPDLOG_DEBUG("Tex: {}, addr {}", tex_, (void *)&tex_);
+    // SPDLOG_DEBUG("First render? {}", firstRender_);
+    // SPDLOG_DEBUG("Tex: {}, addr {}", tex_, (void *)&tex_);
+    SPDLOG_DEBUG("Setting window size to ({}, {})", newSize.x, newSize.y);
 
     glDeleteTextures(1, &tex_);
 
@@ -223,6 +248,12 @@ void VtkViewer::setViewportSize(const ImVec2 newSize) {
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     firstRender_ = false;
+}
+
+void VtkViewer::setRenderer(const vtkSmartPointer<vtkRenderer> &renderer) {
+    this->renderWindow->RemoveRenderer(this->renderer);
+    this->renderer = renderer;
+    this->renderWindow->AddRenderer(renderer);
 }
 
 // Added this myself to set the things that would have been set in the generic init.

@@ -60,6 +60,7 @@ add_executable(theme-generator
     ${CMAKE_CURRENT_SOURCE_DIR}/src/coloring/hsluv.c
 )
 
+
 target_compile_definitions(theme-generator PRIVATE
     SPDLOG_ACTIVE_LEVEL=$<IF:$<CONFIG:Debug>,SPDLOG_LEVEL_DEBUG,SPDLOG_LEVEL_INFO>
 )
@@ -68,4 +69,17 @@ target_compile_definitions(theme-generator PRIVATE
 target_include_directories(theme-generator PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
-target_link_libraries(theme-generator PRIVATE ${OpenCV_LIBS} spdlog::spdlog ${VTK_LIBRARIES} glfw)
+target_link_libraries(theme-generator PRIVATE ${OpenCV_LIBS} spdlog::spdlog ${VTK_LIBRARIES} VTK::glad glfw)
+
+add_executable(minimal-imgui-vtk
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/visualization/demo/imgui-vtk-demo.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/visualization/VtkViewer.cpp
+    ${DEP_IMGUI_LIST}
+    ${DEP_IMGUI_BACKENDS}
+    ${DEP_GLAD_LIST}
+ )
+
+target_include_directories(minimal-imgui-vtk PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+target_link_libraries(minimal-imgui-vtk PRIVATE ${OpenCV_LIBS} spdlog::spdlog ${VTK_LIBRARIES} VTK::glad glfw)
