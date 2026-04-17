@@ -57,6 +57,7 @@ public:
     ~VtkViewer();
 
     IMGUI_IMPL_API void init();
+    void start();
     VtkViewer &operator=(const VtkViewer &vtkViewer);
 
 public:

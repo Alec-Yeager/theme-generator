@@ -49,6 +49,8 @@ void VtkViewer::processEvents() {
         return;
     }
 
+    SPDLOG_DEBUG("Entering event processing.");
+
     ImGuiIO &io = ImGui::GetIO();
     (void)io;
     io.ConfigWindowsMoveFromTitleBarOnly = true; // don't drag window when clicking on image.
@@ -130,6 +132,7 @@ void VtkViewer::init() {
 
     interactorStyle = vtkSmartPointer<vtkInteractorStyleSwitch>::New();
     interactorStyle->SetDefaultRenderer(renderer);
+    interactorStyle->SetCurrentStyleToTrackballCamera();
 
     interactor = vtkSmartPointer<vtkGenericRenderWindowInteractor>::New();
     interactor->SetInteractorStyle(interactorStyle);
@@ -160,6 +163,7 @@ void VtkViewer::init() {
 
 void VtkViewer::render() { render(ImGui::GetContentRegionAvail()); }
 void VtkViewer::render(const ImVec2 size) {
+    // SPDLOG_DEBUG("Render Size: ({}, {})", size.x, size.y);
     setViewportSize(size);
 
     renderWindow->Render();
@@ -171,7 +175,8 @@ void VtkViewer::render(const ImVec2 size) {
     wtoi->SetInput(renderWindow);
     wtoi->Update();
 
-    writer->SetFileName("/home/ayeager/Projects/theme-generator/test/outputs/render.png");
+    const char *home = std::getenv("HOME");
+    writer->SetFileName("/home/Vozrazhat/Projects/theme-generator/test/outputs/render.png");
     writer->SetInputConnection(wtoi->GetOutputPort());
     writer->Write();
 
@@ -267,3 +272,5 @@ void VtkViewer::setRenderWindow(const vtkSmartPointer<vtkGenericOpenGLRenderWind
     renderWindow->SetOffScreenRendering(true);
     renderWindow->SetFrameBlitModeToNoBlit();
 }
+
+void VtkViewer::start() { interactor->Start(); }

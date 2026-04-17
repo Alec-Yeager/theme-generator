@@ -79,6 +79,10 @@ add_executable(minimal-imgui-vtk
     ${DEP_GLAD_LIST}
  )
 
+ target_compile_definitions(minimal-imgui-vtk PRIVATE
+    SPDLOG_ACTIVE_LEVEL=$<IF:$<CONFIG:Debug>,SPDLOG_LEVEL_DEBUG,SPDLOG_LEVEL_INFO>
+)
+
 target_include_directories(minimal-imgui-vtk PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )

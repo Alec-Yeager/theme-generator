@@ -22,12 +22,21 @@
 // File-Specific Includes
 #include "imgui-vtk-demo.h" // Actor generator for this demo
 
+#include <spdlog/spdlog.h>
+
 static void glfw_error_callback(int error, const char *description) {
     fprintf(stderr, "Glfw Error %d: %s\n", error, description);
 }
 
 int main(int argc, char *argv[]) {
     // Setup pipeline
+
+#ifdef NDEBUG
+    spdlog::set_level(spdlog::level::info);
+#else
+    spdlog::set_level(spdlog::level::debug);
+#endif
+
     auto actor = SetupDemoPipeline();
 
     // Setup window
@@ -42,11 +51,11 @@ int main(int argc, char *argv[]) {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
-    const GLubyte *renderer = glGetString(GL_RENDERER);
-    const GLubyte *vendor = glGetString(GL_VENDOR);
+    // const GLubyte *renderer = glGetString(GL_RENDERER);
+    // const GLubyte *vendor = glGetString(GL_VENDOR);
 
-    std::cout << "Renderer: " << renderer << std::endl;
-    std::cout << "Vendor: " << vendor << std::endl;
+    // std::cout << "Renderer: " << renderer << std::endl;
+    // std::cout << "Vendor: " << vendor << std::endl;
 
     // Decide GLSL version
 #ifdef __APPLE__
@@ -91,11 +100,13 @@ int main(int argc, char *argv[]) {
     VtkViewer vtkViewer1;
     vtkViewer1.init();
     vtkViewer1.addActor(actor);
+    // vtkViewer1.start();
 
     VtkViewer vtkViewer2;
     vtkViewer2.init();
     vtkViewer2.getRenderer()->SetBackground(0, 0, 0); // Black background
     vtkViewer2.addActor(actor);
+    // vtkViewer2.start();
 
     // Our state
     bool show_demo_window = true;
@@ -118,6 +129,9 @@ int main(int argc, char *argv[]) {
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
+
+        // vtkViewer1.restartInteractor();
+        // vtkViewer2.restartInteractor();
 
         // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code
         // to learn more about Dear ImGui!).
@@ -166,6 +180,7 @@ int main(int argc, char *argv[]) {
         // 4. Show a simple VtkViewer Instance (Always Open)
         ImGui::SetNextWindowSize(ImVec2(360, 240), ImGuiCond_FirstUseEver);
         ImGui::Begin("Vtk Viewer 1", nullptr, VtkViewer::NoScrollFlags());
+        // vtkViewer1.start();
         vtkViewer1.render(); // default render size = ImGui::GetContentRegionAvail()
         ImGui::End();
 
@@ -199,6 +214,8 @@ int main(int argc, char *argv[]) {
             static float vtk2BkgAlpha = 0.2f;
             ImGui::SliderFloat("Background Alpha", &vtk2BkgAlpha, 0.0f, 1.0f);
             renderer->SetBackgroundAlpha(vtk2BkgAlpha);
+
+            // vtkViewer2.start();
 
             vtkViewer2.render();
 
