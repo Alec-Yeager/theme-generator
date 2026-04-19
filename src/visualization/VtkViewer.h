@@ -68,8 +68,6 @@ public:
     IMGUI_IMPL_API void removeActor(const vtkSmartPointer<vtkProp> &actor);
     void setViewportSize(const ImVec2 newSize);
 
-    void setRenderer(const vtkSmartPointer<vtkRenderer> &renderer);
-
 public:
     static inline unsigned int NoScrollFlags() {
         return ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
@@ -77,6 +75,8 @@ public:
 
 public:
     void setRenderWindow(const vtkSmartPointer<vtkGenericOpenGLRenderWindow> &renderWindow);
+
+    void setRenderer(const vtkSmartPointer<vtkRenderer> &renderer);
 
     inline void setInteractor(const vtkSmartPointer<vtkGenericRenderWindowInteractor> &interactor) {
         this->interactor = interactor;

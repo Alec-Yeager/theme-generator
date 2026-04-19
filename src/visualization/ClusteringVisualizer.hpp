@@ -28,12 +28,10 @@ public:
 private:
     std::unique_ptr<ColorSpaceActor> cs_actor_;
     ClusterReplay replay_;
-    vtkNew<vtkRenderer> ren_;
     VtkViewer viewer_;
     // vtkNew<vtkRenderWindow> win_;
     // vtkNew<vtkRenderWindowInteractor> iren_;
     GLFWwindow *window_;
-    vtkNew<vtkInteractorStyleSwitch> camera_interactor_style_;
 
     void initGLFW();
     void initImGUI();

@@ -10,9 +10,7 @@
 #include "imgui_impl_opengl3.h"
 
 ClusteringVisualizer::ClusteringVisualizer(cv::Mat image, ColorTransformation *transform, ClusterReplay &replay)
-    : cs_actor_(std::make_unique<ColorSpaceActor>(image, transform)), replay_(replay) {
-    camera_interactor_style_->SetCurrentStyleToTrackballCamera();
-}
+    : cs_actor_(std::make_unique<ColorSpaceActor>(image, transform)), replay_(replay) {}
 
 ClusteringVisualizer::~ClusteringVisualizer() {
     // viewer_.getRenderWindow();
@@ -35,14 +33,11 @@ void ClusteringVisualizer::run() {
 
     viewer_ = VtkViewer();
     viewer_.init();
-
-    // iren_->SetInteractorStyle(camera_interactor_style_);
-    viewer_.setInteractorStyle(camera_interactor_style_);
-    viewer_.setRenderer(ren_);
+    viewer_.getRenderer()->SetBackground(1.0, 1.0, 1.0);
 
     // Add the actor constructed by cs_actor_
-    ren_->SetBackground(1.0, 0.0, 1.0);
-    // ren_->AddActor(cs_actor_->getActor());
+    // ren_->SetBackground(1.0, 0.0, 1.0);
+    viewer_.getRenderer()->AddActor(cs_actor_->getActor());
     // win_->AddRenderer(ren_);
     // iren_->SetRenderWindow(win_);
 
