@@ -14,6 +14,8 @@
 
 class ColorSpaceActor {
 public:
+    static constexpr int AXIS_SEGMENTS = 10;
+
     ColorSpaceActor(cv::Mat image, ColorTransformation *transform);
     ~ColorSpaceActor();
 

@@ -209,11 +209,6 @@ void VtkViewer::setViewportSize(const ImVec2 newSize) {
 
     int viewportSize[] = {static_cast<int>(newSize.x), static_cast<int>(newSize.y)};
 
-    // Free old buffers
-    // SPDLOG_DEBUG("First render? {}", firstRender_);
-    // SPDLOG_DEBUG("Tex: {}, addr {}", tex_, (void *)&tex_);
-    // SPDLOG_DEBUG("Setting window size to ({}, {})", newSize.x, newSize.y);
-
     glDeleteTextures(1, &tex_);
 
     glGenTextures(1, &tex_);

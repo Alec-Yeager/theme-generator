@@ -15,6 +15,7 @@ public:
     std::filesystem::path path() { return filepath_; };
     const cv::Mat &image() { return image_; };
     const cv::Mat &paletteImage() { return palette_image_; };
+    const std::vector<cv::Vec3b> &means() { return means_; };
     void setTransforms(std::vector<std::shared_ptr<ColorTransformation>> transforms) { transforms_ = transforms; };
     void setClusterAlg(std::shared_ptr<ClusteringAlgorithm> cluster_alg) { cluster_alg_ = cluster_alg; };
 

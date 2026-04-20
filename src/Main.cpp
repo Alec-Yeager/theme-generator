@@ -6,6 +6,11 @@
 #include "clustering/OptimizedKMeansClustering.hpp"
 #include "coloring/BGRtoHSLuvTransformation.hpp"
 #include "coloring/ColorTransformation.hpp"
+#include "coloring/Palette.hpp"
+#include "coloring/PaletteHandler.hpp"
+#include "export/ColorExporter.hpp"
+#include "export/ExporterRegistry.hpp"
+#include "export/JsonExporter.hpp"
 #include "visualization/ClusteringVisualizer.hpp"
 
 #include <filesystem>
@@ -30,6 +35,9 @@ int main(int argc, char const *argv[]) {
     auto debug_clustering_alg = std::make_shared<DebugClustering>();
     auto hamerly_k_means = std::make_shared<KMeansClusteringHamerly>();
     auto hamerly_k_means_optimized = std::make_shared<OptimizedKMeansClusteringHamerly>();
+
+    ExporterRegistry exporter_registry;
+    exporter_registry.registerExporter(std::make_unique<JsonExporter>());
 
     for (const auto &entry : fs::directory_iterator("../test/images")) {
         if (fs::is_regular_file(entry)) {
@@ -57,9 +65,13 @@ int main(int argc, char const *argv[]) {
         auto replay = ClusterReplay(ClusterTracker());
         ClusteringVisualizer vizualizer_test{ih.image(), replay};
 
-        // ih.setClusterAlg(hamerly_k_means);
-        // ih.calculateClusterMeans(8);
-        // ih.displayMeansInImage();
+        ih.setClusterAlg(hamerly_k_means);
+        ih.calculateClusterMeans(8);
+        ih.displayMeansInImage();
+
+        Palette p = PaletteHandler::generateDarkPalette(ih.means());
+        exporter_registry.runExporters(p, std::vector<std::string>{"JSON"});
+
         // ih.setTransforms(std::vector<std::shared_ptr<ColorTransformation>>{hsluv_transform});
         // ih.setClusterAlg(hamerly_k_means);
         // ih.calculateClusterMeans(8);

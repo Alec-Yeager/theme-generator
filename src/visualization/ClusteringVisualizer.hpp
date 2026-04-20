@@ -2,7 +2,6 @@
 #include "../clustering/ClusterReplay.hpp"
 #include "ColorSpaceActor.hpp"
 #include "VtkViewer.h"
-#include <GLFW/glfw3.h>
 #include <vtkActor.h>
 #include <vtkCallbackCommand.h>
 #include <vtkEventData.h>
@@ -24,15 +23,10 @@ public:
     ~ClusteringVisualizer();
 
     void run();
+    void draw();
 
 private:
     std::unique_ptr<ColorSpaceActor> cs_actor_;
     ClusterReplay replay_;
     VtkViewer viewer_;
-    // vtkNew<vtkRenderWindow> win_;
-    // vtkNew<vtkRenderWindowInteractor> iren_;
-    GLFWwindow *window_;
-
-    void initGLFW();
-    void initImGUI();
 };

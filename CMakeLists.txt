@@ -14,6 +14,9 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(spdlog)
 
+FetchContent_Declare(json URL https://github.com/nlohmann/json/releases/download/v3.12.0/json.tar.xz)
+FetchContent_MakeAvailable(json)
+
 # Add in the imgui
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/deps/imgui")
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/deps/imgui/backends")
@@ -41,6 +44,7 @@ file(GLOB CLUSTERING_LIST "${CMAKE_CURRENT_SOURCE_DIR}/src/clustering/*.cpp")
 file(GLOB COLORING_LIST "${CMAKE_CURRENT_SOURCE_DIR}/src/coloring/*.cpp")
 file(GLOB GEOMETRY_LIST "${CMAKE_CURRENT_SOURCE_DIR}/src/geometry/*.cpp")
 file(GLOB VISUALIZATION_LIST "${CMAKE_CURRENT_SOURCE_DIR}/src/visualization/*.cpp")
+file(GLOB EXPORT_LIST "${CMAKE_CURRENT_SOURCE_DIR}/src/export/*.cpp")
 file(GLOB DEP_IMGUI_LIST "${CMAKE_CURRENT_SOURCE_DIR}/deps/imgui/*.cpp")
 file(GLOB DEP_GLAD_LIST "${CMAKE_CURRENT_SOURCE_DIR}/deps/glad/src/*.c")
 set(DEP_IMGUI_BACKENDS "${CMAKE_CURRENT_SOURCE_DIR}/deps/imgui/backends/imgui_impl_glfw.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/deps/imgui/backends/imgui_impl_opengl3.cpp")
@@ -53,6 +57,7 @@ add_executable(theme-generator
     ${COLORING_LIST}
     ${GEOMETRY_LIST}
     ${VISUALIZATION_LIST}
+    ${EXPORT_LIST}
     ${DEP_IMGUI_LIST}
     ${DEP_IMGUI_BACKENDS}
     ${DEP_GLAD_LIST}
@@ -69,8 +74,9 @@ target_compile_definitions(theme-generator PRIVATE
 target_include_directories(theme-generator PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
-target_link_libraries(theme-generator PRIVATE ${OpenCV_LIBS} spdlog::spdlog ${VTK_LIBRARIES} VTK::glad glfw)
+target_link_libraries(theme-generator PRIVATE ${OpenCV_LIBS} spdlog::spdlog ${VTK_LIBRARIES} VTK::glad glfw nlohmann_json::nlohmann_json)
 
+#[[
 add_executable(minimal-imgui-vtk
     ${CMAKE_CURRENT_SOURCE_DIR}/src/visualization/demo/imgui-vtk-demo.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/visualization/VtkViewer.cpp
@@ -87,3 +93,4 @@ target_include_directories(minimal-imgui-vtk PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 target_link_libraries(minimal-imgui-vtk PRIVATE ${OpenCV_LIBS} spdlog::spdlog ${VTK_LIBRARIES} VTK::glad glfw)
+]]
